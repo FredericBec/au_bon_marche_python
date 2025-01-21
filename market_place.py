@@ -233,17 +233,38 @@ def valid_str(prompt) -> str | None:
     :return: verifying str
     """
     validate_str: bool = False
-    name_firstname = None
+    string = None
 
-    print(prompt)
+    print(prompt + "\n")
     while not validate_str:
-        name_firstname = input().strip()
-        if name_firstname.isalpha():
+        string = input().strip()
+        if string.isalpha():
             validate_str = True
         else:
             print("Merci de saisir que des lettres!")
 
-    return name_firstname
+    return string
+
+
+def valid_quantity(prompt, item) -> int:
+    """
+    Verify if the quantity is not higher than the stock
+    :param prompt: question to the customer
+    :param item: article
+    :return: quantity
+    """
+    validate_quantity: bool = False
+    quantity = None
+    print(prompt)
+
+    while not validate_quantity:
+        quantity = int(input().strip())
+        if item.stock.unite > quantity > 0:
+            validate_quantity = True
+        else:
+            print("Merci de saisir une quantité valide!")
+
+    return quantity
 
 
 # --------------------------Functions-------------------------------------
@@ -295,22 +316,27 @@ def add_purchases() -> Item:
     Allow customer to choose article
     :return: Item or message
     """
-    display_customer_menu()
-    purchase_list: list = fruits + vegetables
+    while True:
+        display_customer_menu()
+        purchase_list: list = fruits + vegetables
 
-    choice: str = input("Que souhaitez-vous acheter?")
-    normalize_choice = normalize_string(choice.casefold())
+        choice: str = input("Que souhaitez-vous acheter?")
+        normalize_choice = normalize_string(choice.casefold())
 
-    available_items = [normalize_string(item.name) for item in purchase_list]
-    if normalize_choice in available_items:
-        quantity: str = input("Veuillez saisir la quantité:\n")
+        available_items = [normalize_string(item.name) for item in purchase_list]
         item_index = available_items.index(choice)
         item = purchase_list[item_index]
-        total_cost = total_price(int(quantity), item.price)
-        update_stock(item, int(quantity))
-        return Item(choice, int(quantity), total_cost)
-    else:
-        print("Veuillez choisir un article de la liste !")
+        if item.stock.unite == 0:
+            print("Cet article n'est plus disponible")
+            time.sleep(2)
+        else:
+            if normalize_choice in available_items:
+                quantity: int = valid_quantity("Veuillez saisir la quantité:", item)
+                total_cost = total_price(quantity, item.price)
+                update_stock(item, quantity)
+                return Item(choice, quantity, total_cost)
+            else:
+                print("Veuillez choisir un article de la liste !")
 
 
 def add_to_cart(customer: Customer) -> None:
@@ -328,7 +354,7 @@ def add_to_cart(customer: Customer) -> None:
         total = total + purchase.total_cost
         purchases.append(purchase)
         cart = Cart(purchases, total, customer)
-        add_article: str = input("Voulez-vous acheter un autre article? [Y/N]")
+        add_article: str = valid_str("Voulez-vous acheter un autre article? [Y/N]")
         if add_article.casefold() == "n":
             carts.append(cart)
             is_finished = True
