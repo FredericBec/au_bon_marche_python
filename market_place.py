@@ -10,6 +10,8 @@ from Item import Item
 from Stock import Stock
 from Vegetable import Vegetable
 
+# --------------------------Constant-------------------------------------
+
 fruits = list()
 vegetables = list()
 cart: Cart
