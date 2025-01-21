@@ -28,6 +28,9 @@ USER_MENU = {1: "arrivée du client", 2: "Bilan de la journée"}
 
 
 def init_fruits() -> None:
+    """
+    Initialize fruits datas
+    """
     clementine = Fruit("Clémentine", Stock(6, KILO), 2.90)
     date = Fruit("Datte", Stock(4, KILO), 7.00)
     pomegranate = Fruit("Grenade", Stock(3, KILO), 3.50)
@@ -51,6 +54,9 @@ def init_fruits() -> None:
 
 
 def init_vegetables() -> None:
+    """
+    Initialize vegetables datas
+    """
     carrot = Vegetable("Carotte", Stock(7, KILO), 1.30)
     brussels_sprouts = Vegetable("Choux de Bruxelles", Stock(4, KILO), 4.00)
     green_cabbage = Vegetable("Choux vert", Stock(12, PIECE), 2.50)
@@ -77,16 +83,30 @@ def init_vegetables() -> None:
 
 
 def display_fruits_menu(fruit) -> str:
+    """
+    display all fruits and formatting them
+    :param fruit: each fruit in fruits list
+    :return: formatting str
+    """
     return (f"| {fruit.name.ljust(13)} | {fruit.stock.unite} {fruit.stock.type.ljust(5)} " +
             f"| {str(fruit.price).rjust(8)} €/{fruit.stock.type.ljust(15)}")
 
 
 def display_vegetables_menu(vege) -> str:
+    """
+    display all vegetables and formatting them
+    :param vege: vegetable in vegetables list
+    :return: formatting str
+    """
     return (f"| {vege.name.ljust(20)} | {str(vege.stock.unite).rjust(2)} {vege.stock.type.ljust(5)} " +
             f"| {str(vege.price).rjust(8)} €/{vege.stock.type.ljust(15)}")
 
 
 def display_menu(index) -> None:
+    """
+    Display the table of articles
+    :param index: integer
+    """
     row_fruits = display_fruits_menu(fruits[index])
     row_vegetables = display_vegetables_menu(vegetables[index])
 
@@ -95,6 +115,9 @@ def display_menu(index) -> None:
 
 
 def init_table_menu() -> None:
+    """
+    Initialize the table of articles for the menu
+    """
     init_fruits()
     init_vegetables()
     print("+" + TABLE_LEFT_HEADER + TABLE_RIGHT_HEADER)
@@ -105,10 +128,18 @@ def init_table_menu() -> None:
 
 
 def display_customer_menu() -> None:
+    """
+    Display table of articles
+    :return: function which initialize the table
+    """
     return init_table_menu()
 
 
 def display_balance(cart_list: list) -> None:
+    """
+    Display the balance of the day and calculate the total of the day
+    :param cart_list: list with all information of clients
+    """
     total_day_balance = total_balance(cart_list)
     print(BALANCE_HEADER)
     print(" Liste des clients: ")
@@ -128,6 +159,9 @@ def display_balance(cart_list: list) -> None:
 
 
 def display_start_menu() -> None:
+    """
+    Display the first menu of application
+    """
     print("+-------------------------+")
     print(f"| [1]-{USER_MENU[1]}   |")
     print(f"| [2]-{USER_MENU[2]} |")
@@ -135,6 +169,10 @@ def display_start_menu() -> None:
 
 
 def display_receipt(cart_customer: Cart) -> None:
+    """
+    Display customer receipt
+    :param cart_customer: cart of the customer
+    """
     print("+-------------------+")
     print(" Nom: " + f"{cart_customer.customer.name}")
     print(" Prénom: " + f"{cart_customer.customer.first_name}")
@@ -147,19 +185,32 @@ def display_receipt(cart_customer: Cart) -> None:
 
 
 def back_to_menu():
+    """
+    Allow user to return to the main menu and reset carts list
+    """
     reset_carts()
     time.sleep(2)
     init()
 
 
-# --------------------------Datas-------------------------------------
+# --------------------------Validate-------------------------------------
 
 
 def normalize_string(s: str) -> str:
+    """
+    Method for ignoring accent in choice
+    :param s: entry to verify
+    :return: normalizing str
+    """
     return unicodedata.normalize('NFKD', s).encode('ASCII', 'ignore').decode('utf-8').casefold()
 
 
 def valid_choice(guess: str) -> int | None:
+    """
+    Method for verify if the user choose the right number
+    :param guess: question to the user
+    :return: cast number
+    """
     valid_number: bool = False
     number: Optional[int] = None
 
@@ -176,6 +227,11 @@ def valid_choice(guess: str) -> int | None:
 
 
 def valid_str(prompt) -> str | None:
+    """
+    Method for verify the right entry
+    :param prompt: question to the user
+    :return: verifying str
+    """
     validate_str: bool = False
     name_firstname = None
 
@@ -190,26 +246,55 @@ def valid_str(prompt) -> str | None:
     return name_firstname
 
 
+# --------------------------Functions-------------------------------------
+
+
 def fill_customer(name: str, firstname: str) -> Customer:
+    """
+    Method to fill customer information
+    :param name: customer name
+    :param firstname: customer firstname
+    :return: customer
+    """
     customer: Customer = Customer(name, firstname)
 
     return customer
 
 
 def update_stock(item, quantity: int) -> None:
+    """
+    Update the stock
+    :param item: article
+    :param quantity: quantity of article
+    """
     if item in fruits or item in vegetables:
         item.stock.unite -= quantity
 
 
 def total_price(quantity: int, price: float) -> float:
+    """
+    Calculate the total of each article
+    :param quantity: quantity of article
+    :param price: price of article
+    :return: total
+    """
     return quantity * price
 
 
 def total_balance(cart_list: list) -> float:
+    """
+    Calculate the total of day balance
+    :param cart_list: list of cart
+    :return: sum of total
+    """
     return sum(cart_cust.total for cart_cust in cart_list)
 
 
 def add_purchases() -> Item:
+    """
+    Allow customer to choose article
+    :return: Item or message
+    """
     display_customer_menu()
     purchase_list: list = fruits + vegetables
 
@@ -229,6 +314,10 @@ def add_purchases() -> Item:
 
 
 def add_to_cart(customer: Customer) -> None:
+    """
+    Allow customer to add article to cart
+    :param customer: customer
+    """
     global cart
     purchases: list = list()
     total: float = 0.0
@@ -249,6 +338,9 @@ def add_to_cart(customer: Customer) -> None:
 
 
 def customer_arrival() -> None:
+    """
+    Method for ask user information
+    """
     customer_name: str | None = valid_str("Veuillez saisir votre nom")
     customer_firstname: str | None = valid_str("Veuillez saisir votre prénom")
 
@@ -261,10 +353,17 @@ def customer_arrival() -> None:
 
 
 def reset_carts() -> None:
+    """
+    Clear all elements of carts list
+    :return:
+    """
     return carts.clear()
 
 
 def init() -> None:
+    """
+    Method for display the main menu and ask user to choose an action
+    """
     display_start_menu()
     user_choice: int | None = valid_choice("Que souhaitez vous faire?")
 
@@ -273,6 +372,9 @@ def init() -> None:
             customer_arrival()
         case 2:
             display_balance(carts)
+
+
+# --------------------------Main-------------------------------------
 
 
 if __name__ == '__main__':
